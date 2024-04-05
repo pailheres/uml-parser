@@ -4,7 +4,35 @@ start: "@startuml" (skinparam | class | relationship)* "@enduml"
 skinparam: "skinparam" sparam svalue
 
 // Classes
-class: "class" class_name ("{" "}")?
+class: "class" class_name ("{" (attribute | method)* "}")?
+
+// Attribute Scope
+att_scope: "{static}" -> static
+         | "{abstract}" -> abstract
+
+// Variables and Methods visibility
+visibility: "+" -> public
+          | "-" -> private
+          | "#" -> protected
+          | "~" -> package
+
+// Attributes
+?attribute: att_scope? visibility? variable
+          | visibility? att_scope? variable
+
+// Variables
+variable: var ":" type
+        | var ":" type "[]"
+        | var ":" type "*"
+
+// Methods
+method: att_scope? visibility? function
+      | visibility? att_scope? function
+
+// Functions
+function: method_name "(" param_list ")" ":" type
+
+param_list: (variable ("," variable)*)?
 
 // Relationships
 relationship: arrow_end_class_name_1 cardinality? arrow_head_1? arrow_body arrow_head_2? cardinality? arrow_end_class_name_2 (":" relation_text)?
@@ -51,6 +79,9 @@ cardinality: ESCAPED_STRING
 sparam: CNAME
 svalue: CNAME|WORD|ESCAPED_STRING|DIGIT
 class_name: CNAME
+method_name: CNAME
+type: CNAME
+var: CNAME
 arrow_end_class_name_1: CNAME
 arrow_end_class_name_2: CNAME
 relation_text: (CNAME|WORD|ESCAPED_STRING|DIGIT|">"|"<")?
