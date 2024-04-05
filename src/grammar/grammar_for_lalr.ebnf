@@ -1,0 +1,65 @@
+start: "@startuml" (skinparam | class | relationship)* "@enduml"
+
+// Skinparam
+skinparam: "skinparam" sparam svalue
+
+// Classes
+class: "class" class_name ("{" "}")?
+
+// Relationships
+relationship: arrow_end_class_name_1 cardinality? arrow_head_1? arrow_body arrow_head_2? cardinality? arrow_end_class_name_2 (":" relation_text)?
+
+// Arrow Heads
+!arrow_head_1: "<"
+             | "<|"
+             | "*"
+             | "o"
+             | "+"
+             | "#"
+             | "x"
+             | "}"
+             | "^"
+             | " "
+
+!arrow_head_2: ">"
+             | "|>"
+             | "*"
+             | "o"
+             | "+"
+             | "#"
+             | "x"
+             | "}"
+             | "^"
+             | " "
+
+!arrow_body: ("-"
+           | "--"
+           | "---"
+           | "-left-"
+           | "-up-"
+           | "-right-"
+           | "-down-"
+           | "."
+           | ".."
+           | ".left."
+           | ".up."
+           | ".right."
+           | ".down." )
+
+cardinality: ESCAPED_STRING
+
+sparam: CNAME
+svalue: CNAME|WORD|ESCAPED_STRING|DIGIT
+class_name: CNAME
+arrow_end_class_name_1: CNAME
+arrow_end_class_name_2: CNAME
+relation_text: (CNAME|WORD|ESCAPED_STRING|DIGIT|">"|"<")?
+relation_class_name_1: CNAME
+relation_class_name_2: CNAME
+
+%import common.CNAME
+%import common.ESCAPED_STRING
+%import common.WORD
+%import common.DIGIT
+%import common.WS
+%ignore WS

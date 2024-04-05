@@ -1,0 +1,15 @@
+@startuml
+
+skinparam monochrome false
+
+class Animal
+{
+}
+
+class Dog
+{
+}
+
+Animal <|-- Dog : qwerty
+
+@enduml

@@ -1,0 +1,17 @@
+// {{ class_name }}.hpp
+
+#ifndef {{ class_name | upper }}_HPP
+#define {{ class_name | upper }}_HPP
+
+class {{ class_name }} {
+public:
+    {{ class_name }}();  // Constructor
+    //~{{ class_name }}(); // Destructor
+
+    // Other member functions
+    {% for function in functions %}
+    {{ function['return_type'] }} {{ function['name'] }}({% for param in function['params'] %}{{ param['type'] }} {{ param['name'] }}{% if not loop.last %}, {% endif %}{% endfor %});
+    {% endfor %}
+};
+
+#endif // {{ class_name | upper }}_HPP
