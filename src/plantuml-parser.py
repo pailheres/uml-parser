@@ -22,6 +22,68 @@ import lark
 from sys import argv
 from jinja2 import Environment, FileSystemLoader
 
+# Define a function to recursively convert the Lark tree to a nested structure
+def tree_to_dict(item):
+    the_node = 'bla'
+    the_data = None
+
+    if isinstance(item, lark.Tree):
+        if isinstance(item.data, lark.Token):
+            if item.data.type == 'RULE':
+                if item.data.value != '' :
+                    the_node = item.data.value
+                    the_data = [tree_to_dict(child) for child in item.children]
+    else :
+        if isinstance(item, lark.Token):
+            the_node = item.type
+            the_data = item.value
+
+    #if hasattr(tree, "data") :
+    #    the_node = tree.data
+    #    the_children = tree_to_dict(tree.ch)
+    #else :
+    #    the_node = ''
+    #    for child in tree.children :
+    #        if hasattr(child, "type"):
+    #            the_children.append({
+    #                'node': child.type,
+    #                'children' : child.value
+    #            })
+    return {
+        the_node : the_data
+    }
+
+def tree_to_class(item):
+    if isinstance(item, lark.Tree):
+        write(f'{indent}{{ "type": "{item.data}", "children": [\n')
+        sep = ''
+        for child in item.children:
+            write(indent)
+            write(sep)
+            _tree_to_json(child, write, level)
+            sep = ',\n'
+        write(f'{indent}] }}\n')
+    elif isinstance(item, lark.Token):
+        bla
+
+def tree_to_struct(item):
+    if isinstance(item, lark.Tree):
+        write(f'{indent}{{ "type": "{item.data}", "children": [\n')
+        sep = ''
+        for child in item.children:
+            write(indent)
+            write(sep)
+            _tree_to_json(child, write, level)
+            sep = ',\n'
+        write(f'{indent}] }}\n')
+    elif isinstance(item, lark.Token):
+        # reminder: Lark Tokens are directly strings
+        # token attrs include: line, end_line, column, end_column, pos_in_stream, end_pos
+        write(f'{indent}{{ "type": "{item.type}", "text": "{item}", "line": {item.line}, "col": {item.column} }}\n')
+    #else:
+        #print ("qwerty" + item)
+        #assert False, item  # fall-through
+
 
 #lark_tree_to_json is from https://gist.github.com/charles-esterbrook/9ab557d70391fd85ebac2b1a59a326cf
 def tree_to_json_str(item):
@@ -70,6 +132,77 @@ def getopts(argv):
         argv = argv[1:]
     return opts
 
+# Define a custom transformer to process a PlantUml Tree
+class ProcessPlantUmlTree2(lark.visitors.Visitor):
+    start = dict
+
+class s_class:
+    variables = {}
+
+# Define a custom transformer to process a PlantUml Tree
+class ProcessPlantUmlTree(lark.visitors.Transformer):
+    #def __default__(self, data, children, meta):
+    #    # Default method to handle unknown rules
+    #    return children or data
+    #
+    #def start(self, tree):
+    #    #print(tree)
+    #    return tree
+    #    
+    #def class_def(self, item):
+    #    for bla in item :
+    #        print(bla)
+    #        if isinstance(bla, lark.Tree):
+    #            print("blablabla:"+bla.data)
+    #        elif isinstance(bla, lark.Token):
+    #            print("blebleble:"+bla.type)
+    #       
+    #    print(item)
+    #
+    #    return item
+        
+
+    def variable(self, item):
+        print("a")
+#        for terminal in item.children:
+#            if isinstance(terminal, lark.Token):
+#                if terminal.type == 'VAR_NAME'
+
+        if len(item) == 2:
+            if isinstance(item[0], lark.Token):
+                if isinstance(item[1], lark.Token):
+                    print(item)
+                    return item[0], item[1]
+
+    def var(self, item):
+        print("b")
+        if len(item) == 1:
+            print(item)
+            return item[0].value
+
+    def type(self, item):
+        print("c")
+        if len(item) == 1:
+            print(item)
+            return item[0].value
+
+    #def variable(self, children):
+    #    return "the variable"
+    #
+    #def type(self, tree):
+    #    print(tree.data)
+    #    print(tree.children)
+    #    #for child in tree.children:
+    #    #    self.visit(child)
+    #
+    #def method(self, children):
+    #    return "the method"
+    #
+    #def relationship(self, children):
+    #    return "the relationship"
+    #
+    #def skinparam(self, children):
+    #    return "the skinparam"
 
 if __name__ == '__main__':
     myargs = getopts(argv)
@@ -80,7 +213,8 @@ if __name__ == '__main__':
     f_gram = open(grammar_file_path)
 
     #parser = lark.Lark(f_gram.read())
-    parser = lark.Lark(f_gram.read() , parser="lalr")
+    #parser = lark.Lark(f_gram.read() , parser="lalr")#, lexer="contextual")
+    parser = lark.Lark(f_gram.read() , parser="earley", ambiguity="explicit")#, lexer="contextual")
 
     if '-i' in myargs:
         f = open(myargs['-i'])
@@ -91,13 +225,27 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.INFO)
 
     tree = parser.parse(f.read())
+    print(tree.pretty())
+    print ("-----\n")
+    print ("-----\n")
     print(tree)
     print ("-----\n")
-    print(tree.pretty())
+    print ("-----\n")
+    print ("-----\n")
+    print ("-----\n")
+    print ("-----\n")
+    #ProcessPlantUmlTree2().visit_topdown(tree)
+    #ProcessPlantUmlTree().transform(tree)
+
+    # Convert Lark tree to nested dictionary
+    tree_dict = tree_to_dict(tree)
+    print(tree_dict)
+
+#    print(tree.pretty())
     
-    json_str = tree_to_json_str(tree)
-    print(json_str)
-    
+#    json_str = tree_to_json_str(tree)
+#    print(json_str)
+#    
 #    environment = Environment(loader=FileSystemLoader("src/templates/"))
 #    template_class_hpp = environment.get_template("template_class_hpp.txt")
 #    

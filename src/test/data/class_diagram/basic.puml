@@ -4,7 +4,8 @@ skinparam monochrome false
 
 class Animal
 {
--age : uint
+-the_age : uint
++the_name : string*
 
 +getAge(): uint
 +setAge(a_age : uint) : void
