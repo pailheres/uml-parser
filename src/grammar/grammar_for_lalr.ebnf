@@ -11,14 +11,11 @@ var_scope: "{static}" -> static
          | "{abstract}" -> abstract
 
 // Variables and Methods visibility
-visibility: "+" -> public
-          | "-" -> private
-          | "#" -> protected
-          | "~" -> package
+_visibility: VISIBILITY
 
 // Variables or Functions
-?vari_or_func: var_scope? visibility variable
-             | visibility function
+?vari_or_func: var_scope? _visibility variable
+             | _visibility function
                
 // Variables
 variable: VAR_NAME ":" TYPE
@@ -85,6 +82,10 @@ TYPE: (CNAME)("["|"]"|"*")*
 VAR_NAME: CNAME
 FUNC_NAME: CNAME
 PARAM_NAME: CNAME
+VISIBILITY: ("+"  //-> public
+           | "-"  //-> private
+           | "#"  //-> protected
+           | "~") //-> package
 
 
 %import common.CNAME

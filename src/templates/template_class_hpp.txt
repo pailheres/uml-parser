@@ -1,12 +1,16 @@
-// {{ class_name }}.hpp
+// {{ CLASS_NAME }}.hpp
 
-#ifndef {{ class_name | upper }}_HPP
-#define {{ class_name | upper }}_HPP
+#ifndef __{{ CLASS_NAME | upper }}__HPP
+#define __{{ CLASS_NAME | upper }}__HPP
 
-class {{ class_name }} {
+class {{ CLASS_NAME }} {
 public:
-    {{ class_name }}();  // Constructor
-    //~{{ class_name }}(); // Destructor
+    {% for var in var['public'] %}
+    {{ var['VAR_NAME'] }};
+    {% endfor %}
+
+    {{ CLASS_NAME }}();  // Constructor
+    //~{{ CLASS_NAME }}(); // Destructor
 
     // Other member functions
     {% for function in functions %}
@@ -14,4 +18,4 @@ public:
     {% endfor %}
 };
 
-#endif // {{ class_name | upper }}_HPP
+#endif // __{{ CLASS_NAME | upper }}__HPP

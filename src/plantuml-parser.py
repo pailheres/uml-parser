@@ -24,7 +24,7 @@ from jinja2 import Environment, FileSystemLoader
 
 # Define a function to recursively convert the Lark tree to a nested structure
 def tree_to_dict(item):
-    the_node = 'bla'
+    the_node = 'blableblibloblu'
     the_data = None
 
     if isinstance(item, lark.Tree):
@@ -38,17 +38,6 @@ def tree_to_dict(item):
             the_node = item.type
             the_data = item.value
 
-    #if hasattr(tree, "data") :
-    #    the_node = tree.data
-    #    the_children = tree_to_dict(tree.ch)
-    #else :
-    #    the_node = ''
-    #    for child in tree.children :
-    #        if hasattr(child, "type"):
-    #            the_children.append({
-    #                'node': child.type,
-    #                'children' : child.value
-    #            })
     return {
         the_node : the_data
     }
@@ -246,8 +235,8 @@ if __name__ == '__main__':
 #    json_str = tree_to_json_str(tree)
 #    print(json_str)
 #    
-#    environment = Environment(loader=FileSystemLoader("src/templates/"))
-#    template_class_hpp = environment.get_template("template_class_hpp.txt")
+    environment = Environment(loader=FileSystemLoader("src/templates/"))
+    template_class_hpp = environment.get_template("template_class_hpp.txt")
 #    
 #    
 #    the_classes = [{
@@ -262,9 +251,48 @@ if __name__ == '__main__':
 #        }]
 #    }]
 #    
-#    for the_class in the_classes:
-#        filename = f"out/{the_class['class_name'].lower()}.hpp"
-#        content = template_class_hpp.render(the_class)
-#        with open(filename, mode='w', encoding='utf-8') as message:
-#            message.write(content)
-#            print(f'... wrote {filename}')
+    the_start = {'classes':[]}
+    if 'start' in tree_dict:
+        for item in tree_dict['start']:
+            if 'class_def' in item:
+                the_class = None
+                for class_item in item['class_def']:
+                    print(class_item)
+                    if 'CLASS_NAME' in class_item:
+                        print(class_item['CLASS_NAME'])
+                        the_class = {
+                            'CLASS_NAME' : class_item['CLASS_NAME'],
+                            'var' : {'public':[], 'protected':[], 'private':[]},
+                            'func' : {'public':[], 'protected':[], 'private':[]}
+                        }
+                    if 'vari_or_func' in class_item:
+                        for varfunc_item in class_item['vari_or_func']:
+                            if 'VISIBILITY' in varfunc_item:
+                                visibility = 'public'
+                                if varfunc_item['VISIBILITY'] == '#':
+                                    visibility = 'protected'
+                                elif varfunc_item['VISIBILITY'] == '-':
+                                    visibility = 'private'
+                                    
+                                print(visibility)
+                                if 'variable' in varfunc_item:
+                                    for var_item in varfunc_item['variable']:
+                                        if 'VAR_NAME' in var_item:
+                                            if 'TYPE' in var_item:
+                                                the_class['var'][visibility].append({'VAR_NAME': var_item['VAR_NAME'], 'TYPE' : var_item['TYPE']})
+                                                    
+                                                    
+                                                
+                                    
+                                
+
+                the_start['classes'].append(the_class)
+            
+    print(the_start)
+        
+    for the_class in the_start['classes']:
+        filename = f"out/{the_class['CLASS_NAME'].lower()}.hpp"
+        content = template_class_hpp.render(the_class)
+        with open(filename, mode='w', encoding='utf-8') as message:
+            message.write(content)
+            print(f'... wrote {filename}')
