@@ -4,7 +4,7 @@ start: "@startuml" (skinparam | class_def | relationship)* "@enduml"
 skinparam: "skinparam" sparam svalue
 
 // Classes
-class_def: "class" CLASS_NAME ("{" vari_or_func* "}")?
+class_def: "class" CLASS_NAME ("extends" BASE_CLASS_NAME)? "{" vari_or_func_list "}"
 
 // Attribute Scope
 var_scope: "{static}" -> static
@@ -14,8 +14,9 @@ var_scope: "{static}" -> static
 _visibility: VISIBILITY
 
 // Variables or Functions
-?vari_or_func: var_scope? _visibility variable
-             | _visibility function
+vari_or_func_list: (vari_or_func+)?
+vari_or_func: var_scope? _visibility variable
+            | _visibility function
                
 // Variables
 variable: VAR_NAME ":" TYPE
@@ -26,58 +27,18 @@ param_list: (param ("," param)*)?
 param: PARAM_NAME ":" TYPE
 
 // Relationships
-relationship: arrow_end_class_name_1 cardinality? arrow_head_1? arrow_body arrow_head_2? cardinality? arrow_end_class_name_2 (":" relation_text)?
+relationship: RELATION_CLASS_NAME RELATION_LABEL? RELATION_ARROW RELATION_LABEL? RELATION_CLASS_NAME (":" RELATION_TEXT)?
 
 // Arrow Heads
-!arrow_head_1: "<"
-             | "<|"
-             | "*"
-             | "o"
-             | "+"
-             | "#"
-             | "x"
-             | "}"
-             | "^"
-             | " "
 
-!arrow_head_2: ">"
-             | "|>"
-             | "*"
-             | "o"
-             | "+"
-             | "#"
-             | "x"
-             | "}"
-             | "^"
-             | " "
-
-!arrow_body: ("-"
-           | "--"
-           | "---"
-           | "-left-"
-           | "-up-"
-           | "-right-"
-           | "-down-"
-           | "."
-           | ".."
-           | ".left."
-           | ".up."
-           | ".right."
-           | ".down." )
-
-cardinality: ESCAPED_STRING
 
 //RULES
 sparam: CNAME
 svalue: CNAME|WORD|ESCAPED_STRING|DIGIT
-arrow_end_class_name_1: CNAME
-arrow_end_class_name_2: CNAME
-relation_text: (CNAME|WORD|ESCAPED_STRING|DIGIT|">"|"<")?
-relation_class_name_1: CNAME
-relation_class_name_2: CNAME
 
 //TERMINALS
 CLASS_NAME: CNAME
+BASE_CLASS_NAME: CNAME
 TYPE: (CNAME)("["|"]"|"*")*
 VAR_NAME: CNAME
 FUNC_NAME: CNAME
@@ -86,6 +47,13 @@ VISIBILITY: ("+"  //-> public
            | "-"  //-> private
            | "#"  //-> protected
            | "~") //-> package
+RELATION_LABEL: ESCAPED_STRING
+RELATION_TEXT: CNAME|WORD|DIGIT|">"|"<"|ESCAPED_STRING
+RELATION_CLASS_NAME: CNAME
+RELATION_ARROW: ("<|--" // -> extension, same thing as inheritance
+               | "*--"  // -> composition
+               | "o--"  // -> aggregation
+               | "--")  // -> use
 
 
 %import common.CNAME
@@ -94,4 +62,5 @@ VISIBILITY: ("+"  //-> public
 %import common.DIGIT
 %import common.LETTER
 %import common.WS
+%import common.WS_INLINE
 %ignore WS

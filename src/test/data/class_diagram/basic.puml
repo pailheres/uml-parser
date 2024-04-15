@@ -6,15 +6,15 @@ class Animal
 {
 -the_age : uint
 +the_name : string*
++the_color : string*
 
 +getAge(): uint
 +setAge(a_age : uint) : void
++bloblo(a_param1 : UINT16, a_param2 : UINT8) : void
 }
 
-class Dog
+class Dog extends Animal
 {
 }
-
-Animal <|-- Dog : qwerty
 
 @enduml
