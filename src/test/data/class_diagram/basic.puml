@@ -11,10 +11,18 @@ class Animal
 +getAge(): uint
 +setAge(a_age : uint) : void
 +bloblo(a_param1 : UINT16, a_param2 : UINT8) : void
+
+<<constructor>> Animal()
+<<constructor>> Animal(a_age: uint)
+<<constructor>> ~Animal()
 }
 
 class Dog extends Animal
 {
+-the_race : string
+
+<<constructor>> Dog()
+<<constructor>> Dog(a_age: uint, a_race: string)
 }
 
 @enduml

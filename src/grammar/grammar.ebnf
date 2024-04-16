@@ -1,121 +1,71 @@
-start: "@startuml" (skinparam | class | relationship)* "@enduml"
+start: "@startuml" (skinparam | class_def | relationship)* "@enduml"
 
 // Skinparam
 skinparam: "skinparam" sparam svalue
 
 // Classes
-class: "class" class_name stereotype? ("{" (class_group_title? (attribute | method) class_group_title?)* "}")?
-     | class_name ":" (attribute | method)?
-
-// Stereotype
-stereotype: "<<" stereotype_name ">>"
-
-// Sections with title
-class_group_title: ".." (group_title "..")?
-                 | "--" (group_title "--")?
-                 | "__" (group_title "__")?
-                 | "=="
-
-// Variables
-variable: var ":" type
-        | var ":" type "[]"
-        | var ":" type "*"
-        | type var
-        | type "[]" var
-        | type "*" var
-        | type
-        | var
-
-text_field: "{field}" field_text
-
-?attribute: att_scope? visibility? variable
-          | visibility? att_scope? variable
-          | att_scope? visibility? text_field
-          | visibility? att_scope? text_field
-
-param_list: [variable ("," variable)*]
-
-function: method_name "(" param_list ")" ":" type
-        | type method_name "(" param_list ")"
-
-text_method: "{method}" method_text
-
-method: att_scope? visibility? function
-      | visibility? att_scope? function
-      | att_scope? visibility? text_method
-      | visibility? att_scope? text_method
+class_def: "class" CLASS_NAME ("extends" BASE_CLASS_NAME)? "{" class_element_list "}"
 
 // Attribute Scope
-att_scope: "{static}" -> static
+var_scope: "{static}" -> static
          | "{abstract}" -> abstract
 
+// Variables and Methods visibility
+_visibility: VISIBILITY
+
+// Variables or Functions
+class_element_list: (class_element+)?
+class_element: var_scope? _visibility variable
+             | _visibility function
+             | constructor
+               
+// Variables
+variable: VAR_NAME ":" TYPE
+
+// Functions
+function: FUNC_NAME "(" param_list ")" ":" TYPE
+param_list: (param ("," param)*)?
+param: PARAM_NAME ":" TYPE
+
+// Constructors
+constructor: "<<constructor>>" CONSTRUCT_NAME "(" param_list ")"
+
 // Relationships
-relationship: arrow_end_1 cardinality? arrow_head_1 arrow_body arrow_head_2 cardinality? arrow_end_2 [":" relation_text]
+relationship: RELATION_CLASS_NAME RELATION_LABEL? RELATION_ARROW RELATION_LABEL? RELATION_CLASS_NAME (":" RELATION_TEXT)?
 
 // Arrow Heads
-!arrow_head_1: "<"
-             | "<|"
-             | "*"
-             | "o"
-             | "+"
-             | "#"
-             | "x"
-             | "}"
-             | "^"
-             | " "
 
-!arrow_head_2: ">"
-             | "|>"
-             | "*"
-             | "o"
-             | "+"
-             | "#"
-             | "x"
-             | "}"
-             | "^"
-             | " "
 
-!arrow_body: ("-"
-           | "--"
-           | "---"
-           | "-left-"
-           | "-up-"
-           | "-right-"
-           | "-down-"
-           | "."
-           | ".."
-           | ".left."
-           | ".up."
-           | ".right."
-           | ".down." )
-
-cardinality: ESCAPED_STRING
-
-// Variables and Methods visibility
-visibility: "+" -> public
-          | "-" -> private
-          | "#" -> protected
-          | "~" -> package
-
-arrow_end_1: CNAME
-arrow_end_2: CNAME
-type: CNAME
-var: CNAME
+//RULES
 sparam: CNAME
 svalue: CNAME|WORD|ESCAPED_STRING|DIGIT
-attribute_name: CNAME
-method_name: CNAME
-class_name: CNAME
-stereotype_name: CNAME
-relation_text: (WORD|ESCAPED_STRING|DIGIT|">"|"<")*
-field_text: (WORD|ESCAPED_STRING|DIGIT)*
-method_text: (WORD|ESCAPED_STRING|DIGIT)*
-class_mem_text: (WORD|ESCAPED_STRING|DIGIT)*
-group_title: (WORD|ESCAPED_STRING|DIGIT)*
+
+//TERMINALS
+CLASS_NAME: CNAME
+BASE_CLASS_NAME: CNAME
+TYPE: (CNAME)("["|"]"|"*")*
+VAR_NAME: CNAME
+CONSTRUCT_NAME: ("~")?(CNAME)
+FUNC_NAME: CNAME
+PARAM_NAME: CNAME
+VISIBILITY: ("+"  //-> public
+           | "-"  //-> private
+           | "#"  //-> protected
+           | "~") //-> package
+RELATION_LABEL: ESCAPED_STRING
+RELATION_TEXT: CNAME|WORD|DIGIT|">"|"<"|ESCAPED_STRING
+RELATION_CLASS_NAME: CNAME
+RELATION_ARROW: ("<|--" // -> extension, same thing as inheritance
+               | "*--"  // -> composition
+               | "o--"  // -> aggregation
+               | "--")  // -> use
+
 
 %import common.CNAME
 %import common.ESCAPED_STRING
 %import common.WORD
 %import common.DIGIT
+%import common.LETTER
 %import common.WS
+%import common.WS_INLINE
 %ignore WS

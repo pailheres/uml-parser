@@ -4,7 +4,7 @@ start: "@startuml" (skinparam | class_def | relationship)* "@enduml"
 skinparam: "skinparam" sparam svalue
 
 // Classes
-class_def: "class" CLASS_NAME ("extends" BASE_CLASS_NAME)? "{" vari_or_func_list "}"
+class_def: "class" CLASS_NAME ("extends" BASE_CLASS_NAME)? "{" class_element_list "}"
 
 // Attribute Scope
 var_scope: "{static}" -> static
@@ -14,9 +14,10 @@ var_scope: "{static}" -> static
 _visibility: VISIBILITY
 
 // Variables or Functions
-vari_or_func_list: (vari_or_func+)?
-vari_or_func: var_scope? _visibility variable
-            | _visibility function
+class_element_list: (class_element+)?
+class_element: var_scope? _visibility variable
+             | _visibility function
+             | constructor
                
 // Variables
 variable: VAR_NAME ":" TYPE
@@ -25,6 +26,9 @@ variable: VAR_NAME ":" TYPE
 function: FUNC_NAME "(" param_list ")" ":" TYPE
 param_list: (param ("," param)*)?
 param: PARAM_NAME ":" TYPE
+
+// Constructors
+constructor: "<<constructor>>" CONSTRUCT_NAME "(" param_list ")"
 
 // Relationships
 relationship: RELATION_CLASS_NAME RELATION_LABEL? RELATION_ARROW RELATION_LABEL? RELATION_CLASS_NAME (":" RELATION_TEXT)?
@@ -41,6 +45,7 @@ CLASS_NAME: CNAME
 BASE_CLASS_NAME: CNAME
 TYPE: (CNAME)("["|"]"|"*")*
 VAR_NAME: CNAME
+CONSTRUCT_NAME: ("~")?(CNAME)
 FUNC_NAME: CNAME
 PARAM_NAME: CNAME
 VISIBILITY: ("+"  //-> public

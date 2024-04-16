@@ -21,14 +21,16 @@ class {{ CLASS_NAME }}{% if BASE_CLASS_NAME %} : {{ BASE_CLASS_NAME }}{% endif %
     );
   {% endfor %}
 {% endfor -%}
-public:
-    {{ CLASS_NAME }}();  // Constructor
-    //~{{ CLASS_NAME }}(); // Destructor
-
-    // Other member functions
-//    {% for function in functions %}
-//    {{ function['return_type'] }} {{ function['name'] }}({% for param in function['params'] %}{{ param['type'] }} {{ param['name'] }}{% if not loop.last %}, {% endif %}{% endfor %});
-//    {% endfor %}
+{% for key in constructor.keys() -%}
+{{ key }}:
+  {% for construct in constructor[key] -%}
+    {{ construct['CONSTRUCT_NAME'] }}(
+      {%- for param in construct['param_list'] -%}
+        {{ param['TYPE'] }} {{ param['PARAM_NAME'] }}{% if not loop.last %}, {% endif %}
+      {%- endfor -%}
+    );
+  {% endfor %}
+{% endfor -%}
 };
 
 #endif // __{{ CLASS_NAME | upper }}__HPP

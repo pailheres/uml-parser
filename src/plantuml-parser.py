@@ -36,6 +36,9 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
     def FUNC_NAME(self, item):
         return {item.type : item.value}
 
+    def CONSTRUCT_NAME(self, item):
+        return {item.type : item.value}
+
     def PARAM_NAME(self, item):
         return {item.type : item.value}
 
@@ -75,30 +78,42 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
             result.update(d)
         return {'function' : result}
 
-    def vari_or_func(self, item):
+    def constructor(self, item):
+        result = {}
+        for d in item:
+            result.update(d)
+        return {'constructor' : result}
+
+    def class_element(self, item):
         #vari_or_func_dict = next((d for d in item if any(key in d for key in ['variable', 'function'])), None)
         vari_dict = next((d for d in item if any(key in d for key in ['variable'])), None)
         func_dict = next((d for d in item if any(key in d for key in ['function'])), None)
+        construct_dict = next((d for d in item if any(key in d for key in ['constructor'])), None)
         visi_dict = next((d for d in item if any('VISIBILITY')), None)
         #vari_or_func_dict.update(visi_dict)
         if (vari_dict != None):
             vari_dict['variable'].update(visi_dict)
         if (func_dict != None):
             func_dict['function'].update(visi_dict)
-        return vari_dict or func_dict
+        return vari_dict or func_dict or construct_dict
 
-    def vari_or_func_list(self, item):
-        the_keys = ['variable', 'function']
+    def class_element_list(self, item):
+        the_keys = ['variable', 'function', 'constructor']
         the_keys_dict = {}
         for key in the_keys:
             the_keys_dict[key] = {}
         result = []
         for d in item:  # loop the dictionaries list
+            print(d)
             for key in the_keys:
                 if key in d:
-                    if d[key]['VISIBILITY'] not in the_keys_dict[key]:
-                        the_keys_dict[key][d[key]['VISIBILITY']] = []
-                    the_keys_dict[key][d[key]['VISIBILITY']].append(d[key])
+                    visi = 'public'
+                    if 'VISIBILITY' in d[key]:
+                        visi = d[key]['VISIBILITY']
+                    if visi not in the_keys_dict[key]:
+                        the_keys_dict[key][visi] = []
+                    the_keys_dict[key][visi].append(d[key])
+        print(the_keys_dict)
         return the_keys_dict
 
     def class_def(self, item):
@@ -167,8 +182,7 @@ if __name__ == '__main__':
     myargs = getopts(argv)
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    #grammar_file_path = os.path.join(dir_path, "grammar", "grammar.ebnf")
-    grammar_file_path = os.path.join(dir_path, "grammar", "grammar_for_lalr.ebnf")
+    grammar_file_path = os.path.join(dir_path, "grammar", "grammar.ebnf")
     f_gram = open(grammar_file_path)
 
     #parser = lark.Lark(f_gram.read())
