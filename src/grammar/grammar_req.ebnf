@@ -1,0 +1,34 @@
+?start: _req_id _source _priority _status _verif_method _dependencies _description _details
+
+//RULES
+_req_id: _HEADER_LEVEL_1 "REQ ID" REQ_ID
+_source: _HEADER_LEVEL_2 "SOURCE" SOURCE
+_priority: _HEADER_LEVEL_2 "PRIORITY" PRIORITY
+_status: _HEADER_LEVEL_2 "STATUS" STATUS
+_verif_method: _HEADER_LEVEL_2 "VERIFICATION METHOD" VERIF_METHOD
+_dependencies: _HEADER_LEVEL_2 "DEPENDENCIES" DEPENDENCIES
+_description: _HEADER_LEVEL_2 "DESCRIPTION" DESCRIPTION
+_details: _HEADER_LEVEL_2 "DETAILS" DETAILS
+
+//TERMINALS
+_HEADER_LEVEL_1: "# "
+_HEADER_LEVEL_2: "## "
+
+REQ_ID: ("SR.")(DIGIT|".")+
+SOURCE: /.+/
+PRIORITY: /.+/
+STATUS: /.+/
+VERIF_METHOD: /.+/
+DEPENDENCIES: /.+/
+DESCRIPTION: /.+/
+DETAILS: /.+/s
+
+%import common.CNAME
+%import common.ESCAPED_STRING
+%import common.WORD
+%import common.DIGIT
+%import common.LETTER
+%import common.WS
+%import common.WS_INLINE
+%import common.NEWLINE
+%ignore WS

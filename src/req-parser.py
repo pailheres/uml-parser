@@ -24,7 +24,7 @@ import pprint
 pp = pprint.PrettyPrinter(indent=1)
 
 # Define a custom transformer to process a PlantUml Tree
-class ProcessPlantUmlTree(lark.visitors.Transformer):
+class ProcessRequirementTree(lark.visitors.Transformer):
     def __default__(self, data, children, meta):
         # Default method to handle unknown rules
         return children or data
@@ -180,7 +180,7 @@ if __name__ == '__main__':
     myargs = getopts(argv)
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    grammar_file_path = os.path.join(dir_path, "grammar", "grammar_plantuml.ebnf")
+    grammar_file_path = os.path.join(dir_path, "grammar", "grammar_req.ebnf")
     f_gram = open(grammar_file_path)
 
     #parser = lark.Lark(f_gram.read())
@@ -196,35 +196,20 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.INFO)
 
     tree = parser.parse(f.read())
-    #print(tree.pretty())
-    #print ("-----\n")
-    #print ("-----\n")
-    #print(tree)
     pp.pprint(tree)
-    #print ("-----\n")
-    #print ("-----\n")
-    #print ("-----\n")
-    #print ("-----\n")
-    #print ("-----\n")
 
-    #ProcessPlantUmlTree2().visit_topdown(tree)
-    the_model = ProcessPlantUmlTree().transform(tree)
-    #print(tree.pretty())
-    pp.pprint(the_model)
-    ## Convert Lark tree to nested dictionary
-    #tree_dict = tree_to_dict(tree)
-    #print(tree_dict)
-    
-#    json_str = tree_to_json_str(tree)
-#    print(json_str)
-
-    environment = Environment(loader=FileSystemLoader("src/templates/"))
-    template_class_hpp = environment.get_template("template_class_hpp.txt")
-
-    for the_class_dict in the_model['class']:
-        the_class = the_class_dict['class']
-        filename = f"out/{the_class['CLASS_NAME'].lower()}.hpp"
-        content = template_class_hpp.render(the_class)
-        with open(filename, mode='w', encoding='utf-8') as message:
-            message.write(content)
-            print(f'... wrote {filename}')
+#    #ProcessPlantUmlTree2().visit_topdown(tree)
+#    the_model = ProcessRequirementTree().transform(tree)
+#    #print(tree.pretty())
+#    pp.pprint(the_model)
+#
+#    environment = Environment(loader=FileSystemLoader("src/templates/"))
+#    template_class_hpp = environment.get_template("template_class_hpp.txt")
+#
+#    for the_class_dict in the_model['class']:
+#        the_class = the_class_dict['class']
+#        filename = f"out/{the_class['CLASS_NAME'].lower()}.hpp"
+#        content = template_class_hpp.render(the_class)
+#        with open(filename, mode='w', encoding='utf-8') as message:
+#            message.write(content)
+#            print(f'... wrote {filename}')
