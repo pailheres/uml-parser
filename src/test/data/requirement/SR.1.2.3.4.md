@@ -26,14 +26,14 @@ On peut y aller longuement sur plusieurs ligne.
 
 Comme ceci :
 
-::: mermaid
+``` mermaid
   graph TD;
       A[qwerty] -- NO --> B;
       A -- YES --> C;
       B --> D;
       C --> D;
       D --> E;
-:::
+```
 
 ou bien ceci :
 
