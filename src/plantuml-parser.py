@@ -48,9 +48,6 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
     def CLASS_NAME(self, item):
         return {item.type : item.value}
 
-    def BASE_CLASS_NAME(self, item):
-        return {item.type : item.value}
-
     def TYPE(self, item):
         return {item.type : item.value}
 
@@ -116,6 +113,8 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
 
     def class_def(self, item):
         result = {}
+        #print('C')
+        #print(item)
         for d in item:
             result.update(d)
         return {'class' : result}
@@ -124,7 +123,10 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
         arrow = 'extension' if item.value == '<|--' else 'composition' if item.value == '*--' else 'aggregation' if item.value == 'o--' else 'use'
         return {item.type : arrow}
 
-    def RELATION_CLASS_NAME(self, item):
+    def RELATION_CLASS_NAME_BEFORE(self, item):
+        return {item.type : item.value}
+
+    def RELATION_CLASS_NAME_AFTER(self, item):
         return {item.type : item.value}
         
     def RELATION_LABEL(self, item):
@@ -134,26 +136,24 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
         return {item.type : item.value}
 
     def relationship(self, item):
-        result = []
-        print('A')
-        print(item)
-        #for L in item:
-        #    the_dict = {}
-        #    for d in L:
-        #        the_dict.update(d)
-        #    result.append(the_dict)
+        result = {}
+        #print('R')
+        #print(item)
+        for d in item:
+            #print(d)
+            result.update(d)
         return {'relationship' : result}
 
-    def start(self, item):
-        the_model = {}
-        the_keys = ['class']
-        for key in the_keys:
-            the_model[key] = []
-
-        for d in item:
-            for key in the_keys:
-                if key in d:
-                    the_model[key].append(d)
+    #def start(self, item):
+    #    the_model = {}
+    #    the_keys = ['class']
+    #    for key in the_keys:
+    #        the_model[key] = []
+    #
+    #    for d in item:
+    #        for key in the_keys:
+    #            if key in d:
+    #                the_model[key].append(d)
 
         #print("z")
         #print(the_model)
@@ -180,7 +180,8 @@ if __name__ == '__main__':
     myargs = getopts(argv)
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    grammar_file_path = os.path.join(dir_path, "grammar", "grammar_plantuml.ebnf")
+    #grammar_file_path = os.path.join(dir_path, "grammar", "grammar_plantuml.ebnf")
+    grammar_file_path = os.path.join(dir_path, "grammar", "grammar_mermaid.ebnf")
     f_gram = open(grammar_file_path)
 
     #parser = lark.Lark(f_gram.read())
@@ -200,7 +201,7 @@ if __name__ == '__main__':
     #print ("-----\n")
     #print ("-----\n")
     #print(tree)
-    pp.pprint(tree)
+    #pp.pprint(tree)
     #print ("-----\n")
     #print ("-----\n")
     #print ("-----\n")
@@ -221,8 +222,23 @@ if __name__ == '__main__':
     environment = Environment(loader=FileSystemLoader("src/templates/"))
     template_class_hpp = environment.get_template("template_class_hpp.txt")
 
-    for the_class_dict in the_model['class']:
-        the_class = the_class_dict['class']
+
+    relationship_dicts_list = [d['relationship'] for d in the_model if 'relationship' in d]
+    #print(relationship_dicts_list)
+    extension_dicts_list = [d for d in relationship_dicts_list if d['RELATION_ARROW'] == 'extension']
+    #print('aaaa')
+    print(extension_dicts_list)
+    #print('bbbb')
+    #for the_relation_dict in relationship_dicts :
+    #    print(the_relation_dict)
+    #    if (the_relation_dict['RELATION_ARROW'] == 'extension') :
+    #        print(the_relation_dict['RELATION_CLASS_NAME_AFTER'])
+            
+
+
+    class_dicts = [d['class'] for d in the_model if 'class' in d]
+    for the_class in class_dicts:
+        the_class['base_classes'] = [d['RELATION_CLASS_NAME_BEFORE'] for d in extension_dicts_list if d['RELATION_CLASS_NAME_AFTER'] == the_class['CLASS_NAME']]
         filename = f"out/{the_class['CLASS_NAME'].lower()}.hpp"
         content = template_class_hpp.render(the_class)
         with open(filename, mode='w', encoding='utf-8') as message:

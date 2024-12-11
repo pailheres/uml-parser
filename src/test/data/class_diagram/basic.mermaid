@@ -1,0 +1,40 @@
+``` mermaid
+
+classDiagram
+  class Animal {
+    +int the_age
+    +string the_name
+    +string the_color
+
+    +uint getAge()
+    +void setAge(uint a_age)
+    +void bloblo(UINT16 a_param1, UINT8 a_param2)
+
+    <<constructor>> Animal()
+    <<constructor>>  Animal(uint a_age)
+    <<constructor>>  ~Animal()
+  }
+
+  class Blob {
+    -uint32 qwerty
+  }
+
+  class Dog {
+    -string the_race
+
+    <<constructor>>  Dog()
+    <<constructor>>  Dog(uint a_age, string a_race)
+  }
+
+  class Cat {
+    -string the_race
+
+    <<constructor>>  Cat()
+    <<constructor>>  Cat(uint a_age, string a_race)
+  }
+
+  Animal <|-- Dog
+  Animal <|-- Cat
+  Blob <|-- Dog
+
+```

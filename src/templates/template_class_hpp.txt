@@ -3,7 +3,10 @@
 #ifndef __{{ CLASS_NAME | upper }}__HPP
 #define __{{ CLASS_NAME | upper }}__HPP
 
-class {{ CLASS_NAME }}{% if BASE_CLASS_NAME %} : {{ BASE_CLASS_NAME }}{% endif %}
+class {{ CLASS_NAME }}
+{% for base_class in base_classes -%}{% if loop.first %} :{% endif %}
+  {{ base_class }}{% if not loop.last %},{% endif %}
+{% endfor -%}
 {
 {% for key in variable.keys() -%}
 {{ key }}:
