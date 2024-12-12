@@ -1,29 +1,19 @@
-# PlatUML Parser
+# UML Parser
 
-This is a Proof-of-Concept PlantUML parser. This is still WIP, and support is
-being added incrementally. PlantUML is being parsed using LARK and described in
+This is a Proof-of-Concept UML parser. This is still WIP, and support is
+being added incrementally. UML is being parsed using LARK and described in
 EBNF.
 
 ## Usage
 
 ```
-python plantuml-parser.py -i <plantuml-file>
+python uml-parser.py -i <uml-file>
 ```
 
 ## TODOs
 
-* Finish Supporting all Class Diagram features in
-  http://plantuml.com/class-diagram
+* Finish Class Diagram
 * Add support for other diagrams;
-
-  * Sequence Diagram
-  * Usecase Diagram
-  * Activity Diagram
-  * Component Diagram
-  * State Diagram
-  * Object Diagram
-  * Deployment Diagram
-  * Timing Diagram
 
 * Add setup.py
 * Output AST as JSON or other usable format instead of STDOUT
