@@ -144,20 +144,20 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
             result.update(d)
         return {'relationship' : result}
 
-    #def start(self, item):
-    #    the_model = {}
-    #    the_keys = ['class']
-    #    for key in the_keys:
-    #        the_model[key] = []
-    #
-    #    for d in item:
-    #        for key in the_keys:
-    #            if key in d:
-    #                the_model[key].append(d)
-
-        #print("z")
-        #print(the_model)
-        return the_model
+#    def start(self, item):
+#        the_model = {}
+#        the_keys = ['class']
+#        for key in the_keys:
+#            the_model[key] = []
+#    
+#        for d in item:
+#            for key in the_keys:
+#                if key in d:
+#                    the_model[key].append(d)
+#
+#        #print("z")
+#        #print(the_model)
+#        return the_model
     
 
 def getopts(argv):
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     #print ("-----\n")
     #print ("-----\n")
     #print(tree)
-    #pp.pprint(tree)
+    pp.pprint(tree)
     #print ("-----\n")
     #print ("-----\n")
     #print ("-----\n")

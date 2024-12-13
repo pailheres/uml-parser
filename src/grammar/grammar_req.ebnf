@@ -1,18 +1,30 @@
-?start: _req_id _source _priority _status _verif_method _dependencies _description _details
+start: _req_id _source _priority _status _verif_method _dependencies _description _details
 
 //RULES
-_req_id: _HEADER_LEVEL_2 "REQ ID" REQ_ID
-_source: _HEADER_LEVEL_3 "SOURCE" SOURCE
-_priority: _HEADER_LEVEL_3 "PRIORITY" PRIORITY
-_status: _HEADER_LEVEL_3 "STATUS" STATUS
-_verif_method: _HEADER_LEVEL_3 "VERIFICATION METHOD" VERIF_METHOD
-_dependencies: _HEADER_LEVEL_3 "DEPENDENCIES" DEPENDENCIES
-_description: _HEADER_LEVEL_3 "DESCRIPTION" DESCRIPTION
-_details: _HEADER_LEVEL_3 "DETAILS" DETAILS
+_req_id: _HEADER_LEVEL_2 "REQ ID" WS REQ_ID WS
+_source: _HEADER_LEVEL_3 "SOURCE" WS SOURCE WS
+_priority: _HEADER_LEVEL_3 "PRIORITY" WS PRIORITY WS
+_status: _HEADER_LEVEL_3 "STATUS" WS STATUS WS
+_verif_method: _HEADER_LEVEL_3 "VERIFICATION METHOD" WS VERIF_METHOD WS
+_dependencies: _HEADER_LEVEL_3 "DEPENDENCIES" WS DEPENDENCIES WS
+_description: _HEADER_LEVEL_3 "DESCRIPTION" WS DESCRIPTION WS
+_details: _HEADER_LEVEL_3 "DETAILS" WS DETAILS
+////_details: _HEADER_LEVEL_3 "DETAILS" WS _details_lines
+//_details: _HEADER_LEVEL_3 "DETAILS" WS ((DETAILS _NEWLINE)+)
+//_details_lines: (details_line+)
+//details_line: DETAILS _NEWLINE
+//
+//_mermaid: "``` mermaid" _mermaid_diagram "```"
+//_mermaid_diagram: (class_diagram | sequence_diagram) *
+////class_diagram: "classDiagram" (class_def | relationship | note)+
+////sequence_diagram: "sequenceDiagram" (class_def | relationship | note)+
+//class_diagram: "classDiagram" *
+//sequence_diagram: "sequenceDiagram" *
 
 //TERMINALS
 _HEADER_LEVEL_2: "## "
 _HEADER_LEVEL_3: "### "
+//_NEWLINE: NEWLINE
 
 REQ_ID: ("SR.")(DIGIT|".")+
 SOURCE: /.+/
@@ -21,7 +33,7 @@ STATUS: /.+/
 VERIF_METHOD: /.+/
 DEPENDENCIES: /.+/
 DESCRIPTION: /.+/
-DETAILS: /.+/s
+DETAILS: /[\s\S]/+  //\s matches all whitespace characters, including \n, \r, \t, etc. \S matches all non-whitespace characters. Together, [\s\S] matches any character.
 
 %import common.CNAME
 %import common.ESCAPED_STRING
@@ -31,4 +43,3 @@ DETAILS: /.+/s
 %import common.WS
 %import common.WS_INLINE
 %import common.NEWLINE
-%ignore WS

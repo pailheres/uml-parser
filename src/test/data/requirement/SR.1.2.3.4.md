@@ -1,4 +1,4 @@
-## REQ ID
+## REQ ID    
 SR.1.2.3.4
 
 ### SOURCE
@@ -17,10 +17,12 @@ Will verify this with a test
 quoi faire ici
 
 ### DESCRIPTION
+
 Une courte description sur une ligne qui va se rammasser dans le requirement graph ou table
 
 ### DETAILS
-Ici on details le requirement.
+
+Ici on detail le requirement.
 
 On peut y aller longuement sur plusieurs ligne.
 

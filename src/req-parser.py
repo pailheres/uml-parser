@@ -29,29 +29,28 @@ class ProcessRequirementTree(lark.visitors.Transformer):
         # Default method to handle unknown rules
         return children or data
 
-    def VISIBILITY(self, item):
-        visi = 'private' if item.value == '-' else 'protected' if item.value == '#' else 'public'
-        return {item.type : visi}
-
-    def FUNC_NAME(self, item):
+    def REQ_ID(self, item):
         return {item.type : item.value}
 
-    def CONSTRUCT_NAME(self, item):
+    def SOURCE(self, item):
         return {item.type : item.value}
 
-    def PARAM_NAME(self, item):
+    def PRIORITY(self, item):
         return {item.type : item.value}
 
-    def VAR_NAME(self, item):
+    def STATUS(self, item):
         return {item.type : item.value}
 
-    def CLASS_NAME(self, item):
+    def VERIF_METHOD(self, item):
         return {item.type : item.value}
 
-    def BASE_CLASS_NAME(self, item):
+    def DEPENDENCIES(self, item):
         return {item.type : item.value}
 
-    def TYPE(self, item):
+    def DESCRIPTION(self, item):
+        return {item.type : item.value}
+
+    def DETAILS(self, item):
         return {item.type : item.value}
 
     def variable(self, item):
@@ -135,8 +134,8 @@ class ProcessRequirementTree(lark.visitors.Transformer):
 
     def relationship(self, item):
         result = []
-        print('A')
-        print(item)
+        #print('A')
+        #print(item)
         #for L in item:
         #    the_dict = {}
         #    for d in L:
@@ -146,17 +145,17 @@ class ProcessRequirementTree(lark.visitors.Transformer):
 
     def start(self, item):
         the_model = {}
-        the_keys = ['class']
-        for key in the_keys:
-            the_model[key] = []
-
-        for d in item:
-            for key in the_keys:
-                if key in d:
-                    the_model[key].append(d)
-
-        #print("z")
-        #print(the_model)
+#        the_keys = ['requirement']
+#        for key in the_keys:
+#            the_model[key] = []
+#
+#        for d in item:
+#            for key in the_keys:
+#                if key in d:
+#                    the_model[key].append(d)
+#
+        print("z")
+        print(the_model)
         return the_model
     
 
@@ -181,6 +180,7 @@ if __name__ == '__main__':
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     grammar_file_path = os.path.join(dir_path, "grammar", "grammar_req.ebnf")
+    #grammar_file_path = os.path.join(dir_path, "grammar", "grammar_essai.ebnf")
     f_gram = open(grammar_file_path)
 
     #parser = lark.Lark(f_gram.read())
@@ -199,9 +199,9 @@ if __name__ == '__main__':
     pp.pprint(tree)
 
 #    #ProcessPlantUmlTree2().visit_topdown(tree)
-#    the_model = ProcessRequirementTree().transform(tree)
-#    #print(tree.pretty())
-#    pp.pprint(the_model)
+    the_model = ProcessRequirementTree().transform(tree)
+    #print(tree.pretty())
+    #pp.pprint(the_model)
 #
 #    environment = Environment(loader=FileSystemLoader("src/templates/"))
 #    template_class_hpp = environment.get_template("template_class_hpp.txt")
