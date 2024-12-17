@@ -1,11 +1,11 @@
 // Mermaid Grammar in EBNF for Lark Earley Parser
 
-?start: "``` mermaid" (class_diagram | sequence_diagram) * "```"
+?start: "``` mermaid" (class_diagram | state_diagram)* "```"
 
 class_diagram: "classDiagram" (class_def | relationship | note)+
 sequence_diagram: "sequenceDiagram" (class_def | relationship | note)+
+state_diagram: "stateDiagram-v2" "%%" FSM_NAME _state_block+
 
-//class_def: "class" CNAME ("{" class_body? "}")?
 class_def: "class" CLASS_NAME ("{" class_element_list "}")?
 
 // Attribute Scope
@@ -37,7 +37,7 @@ relationship: RELATION_CLASS_NAME_BEFORE RELATION_ARROW RELATION_CLASS_NAME_AFTE
 
 //class_body: (attribute | method)*
 //attribute: CNAME ":" CNAME
-//method: CNAME "(" [param_list] ")" (":" CNAME)?
+//method: CNAME "(" [param_list] ")" [":" CNAME]
 //param_list: CNAME ("," CNAME)*
 
 //relation: CNAME relation_type CNAME
@@ -45,11 +45,24 @@ relationship: RELATION_CLASS_NAME_BEFORE RELATION_ARROW RELATION_CLASS_NAME_AFTE
 
 note: "note" "for" CNAME ":" /.+/
 
+
+_state_block: state_declaration | transition
+
+state_declaration: "state" STATE_NAME "{" _inner_state_block+ "}" | "state" STATE_NAME
+
+_inner_state_block: state_declaration | transition
+
+transition: STATE_NAME_FROM "-->" STATE_NAME_TO transition_option?
+transition_option : ":" TRANSITION_LABEL
+
+
+
 //RULES
 sparam: CNAME
 svalue: CNAME|WORD|ESCAPED_STRING|DIGIT
 
 //TERMINALS
+_NL: NEWLINE
 CLASS_NAME: CNAME
 BASE_CLASS_NAME: CNAME
 TYPE: (CNAME)("["|"]"|"*")*
@@ -66,8 +79,14 @@ RELATION_ARROW: ("<|--" // -> extension, same thing as inheritance
                | "*--"  // -> composition
                | "o--"  // -> aggregation
                | "--")  // -> use
-COMMENT: /\/\/[^\n]*/
-%ignore COMMENT
+
+FSM_NAME: CNAME
+STATE_NAME: CNAME
+STATE_NAME_FROM: (CNAME | "[*]")
+STATE_NAME_TO: (CNAME | "[*]")
+TRANSITION_LABEL: /.+/
+
+
 %import common.CNAME
 %import common.ESCAPED_STRING
 %import common.WORD
@@ -75,4 +94,6 @@ COMMENT: /\/\/[^\n]*/
 %import common.LETTER
 %import common.WS
 %import common.WS_INLINE
+%import common.NEWLINE
+
 %ignore WS

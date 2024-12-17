@@ -1,0 +1,48 @@
+#ifndef {{ FSM_NAME.upper() }}_HPP
+#define {{ FSM_NAME.upper() }}_HPP
+
+#include <iostream>
+#include <string>
+#include <unordered_map>
+
+class {{ FSM_NAME }} {
+public:
+    enum class State {
+        {% for state in STATES %}
+        {{ state }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+    };
+
+    {{ FSM_NAME }}() : current_state(State::{{ initial_state }}) {}
+
+    void transition(State new_state) {
+        if (transitions[current_state].count(new_state)) {
+            std::cout << "Transitioning from " << stateToString(current_state)
+                      << " to " << stateToString(new_state) << std::endl;
+            current_state = new_state;
+        } else {
+            std::cerr << "Invalid transition from " << stateToString(current_state)
+                      << " to " << stateToString(new_state) << std::endl;
+        }
+    }
+
+    std::string stateToString(State state) const {
+        switch (state) {
+            {% for state in states %}
+            case State::{{ state }}: return "{{ state }}";
+            {% endfor %}
+        }
+        return "Unknown";
+    }
+
+private:
+    State current_state;
+
+    std::unordered_map<State, std::unordered_set<State>> transitions = {
+        {% for state, valid_transitions in transitions.items() %}
+        {State::{{ state }}, { {% for valid_state in valid_transitions %}State::{{ valid_state }}{% if not loop.last %}, {% endif %}{% endfor %} }},
+        {% endfor %}
+    };
+};
+
+#endif // {{ FSM_NAME.upper() }}_HPP

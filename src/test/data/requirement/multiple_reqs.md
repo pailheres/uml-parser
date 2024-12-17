@@ -68,6 +68,71 @@ ou bien ceci :
 
 
 
+
+## REQ ID
+FR.4.5.6.99
+
+### SOURCE
+La source est le blablablablabla
+
+### PRIORITY
+Normal
+
+### STATUS
+On ne s'en sert pas ici, on va plutot y aller avec les resultats de test, l'implementation etc pour y aller d'un status
+
+### VERIFICATION METHOD
+Will verify this with a test
+
+### DEPENDENCIES
+quoi faire ici
+
+### DESCRIPTION
+
+Une courte description sur une ligne qui va se rammasser dans le requirement graph ou table
+
+### DETAILS
+
+Ici on detail le requirement.
+
+On peut y aller longuement sur plusieurs ligne.
+
+Comme ceci :
+
+``` mermaid
+stateDiagram-v2   %% essai
+    [*] --> State1
+    State1 --> State2 : Transition 1
+    State1 --> State3 : Transition 2
+    State2 --> State4 : Transition 3
+    State3 --> State4 : Transition 4
+    State4 --> [*]
+
+    state State1 {
+        [*] --> SubState1
+        SubState1 --> SubState2 : Sub Transition
+        SubState2 --> [*]
+    }
+
+    state State3 {
+        [*] --> InnerState1
+        InnerState1 --> InnerState2 : Inner Transition
+        InnerState2 --> State3A : blabla
+        State3A --> InnerState1 : Loop Transition
+        State3A --> [*]
+
+        state State3A {
+          [*] --> InnerState3A1
+          InnerState3A1 --> InnerState3A2 : Inner Transition
+          InnerState3A2 --> aaaaaaa : Loop Transition
+          aaaaaaa --> bbbbbbbbb
+          bbbbbbbbb --> [*]
+        }
+    }
+
+```
+
+
 ## REQ ID
 SR.1.2.3.4
 
