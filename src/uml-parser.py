@@ -145,35 +145,52 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
         return {'relationship' : result}
 
     def check_and_add_state(self, a_state, a_state_list):
-        print(a_state)
+        #print(a_state)
         the_found = 0
         if a_state == '[*]':
             the_found = 1
         else :
             for st in a_state_list:
-                if a_state in st['name']:
+                #print('qwerty')
+                #print(st)
+                if a_state == st['name']:
                     the_found = 1
                     break
         if the_found == 0:
-            a_state_list.append({'name': a_state})
+            a_state_list.append({'name': a_state, 'out_state': []})
+        return
+
+    def add_out_transition_to_state(self, a_from_state, a_to_state, a_state_list):
+        print('qwerty')
+        print(a_from_state)
+        print(a_to_state)
+        #print(a_state_list)
+        match = next((item for item in a_state_list if item.get('name') == a_from_state), None)
+        if (match != None) :
+            match['out_state'].append(a_to_state)
         return
 
     def state_declaration(self, item):
-        print("sde:")
-        print(item)
         result = {}
-        result['name'] = []
+        result['name'] = ''
         result['state'] = []
         result['transition'] = []
+        result['out_state'] = []
         for d in item:
             #print("d:")
             #print(d)
             for key, value in d.items():
-                result[key].append(value)
+                if key == 'name':
+                    result[key] = value
+                else:
+                    result[key].append(value)
 
         for tr in result['transition']:
             self.check_and_add_state(tr['STATE_NAME_FROM'], result['state'])
             self.check_and_add_state(tr['STATE_NAME_TO'], result['state'])
+
+        for tr in result['transition']:
+            self.add_out_transition_to_state(tr['STATE_NAME_FROM'], tr['STATE_NAME_TO'], result['state'])
             
         return {'state' : result}
 
@@ -197,23 +214,6 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
             result.update(d)
         #print(result)
         return {'transition' : result}
-
-    def FSM_NAME(self, item):
-        return {'name' : item.value}
-
-    def state_diagram(self, item):
-        print("sd:")
-        print(item)
-        result = {}
-        result['name'] = []
-        result['state'] = []
-        result['transition'] = []
-        for d in item:
-            #print("d:")
-            #print(d)
-            for key, value in d.items():
-                result[key].append(value)
-        return {'FSM' : result}
 
 def getopts(argv):
     opts = {}  # Empty dictionary to store key-value pairs.
@@ -289,6 +289,14 @@ if __name__ == '__main__':
         the_class['base_classes'] = [d['RELATION_CLASS_NAME_BEFORE'] for d in extension_dicts_list if d['RELATION_CLASS_NAME_AFTER'] == the_class['CLASS_NAME']]
         filename = f"out/{the_class['CLASS_NAME'].lower()}.hpp"
         content = template_class_hpp.render(the_class)
+        with open(filename, mode='w', encoding='utf-8') as message:
+            message.write(content)
+            print(f'... wrote {filename}')
+            
+    fsm_dicts = [d['state'] for d in the_model if 'state' in d]
+    for the_fsm in fsm_dicts:
+        filename = f"out/{the_fsm['name'].lower()}.hpp"
+        content = template_fsm_hpp.render(the_fsm)
         with open(filename, mode='w', encoding='utf-8') as message:
             message.write(content)
             print(f'... wrote {filename}')

@@ -4,7 +4,7 @@
 
 class_diagram: "classDiagram" (class_def | relationship | note)+
 sequence_diagram: "sequenceDiagram" (class_def | relationship | note)+
-state_diagram: "stateDiagram-v2" "%%" FSM_NAME _state_block+
+state_diagram: "stateDiagram-v2" state_declaration
 
 class_def: "class" CLASS_NAME ("{" class_element_list "}")?
 
@@ -46,9 +46,7 @@ relationship: RELATION_CLASS_NAME_BEFORE RELATION_ARROW RELATION_CLASS_NAME_AFTE
 note: "note" "for" CNAME ":" /.+/
 
 
-_state_block: state_declaration | transition
-
-state_declaration: "state" STATE_NAME "{" _inner_state_block+ "}" | "state" STATE_NAME
+state_declaration: "state" STATE_NAME "{" _inner_state_block+ "}"
 
 _inner_state_block: state_declaration | transition
 
