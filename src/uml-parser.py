@@ -144,21 +144,76 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
             result.update(d)
         return {'relationship' : result}
 
-#    def start(self, item):
-#        the_model = {}
-#        the_keys = ['class']
-#        for key in the_keys:
-#            the_model[key] = []
-#    
-#        for d in item:
-#            for key in the_keys:
-#                if key in d:
-#                    the_model[key].append(d)
-#
-#        #print("z")
-#        #print(the_model)
-#        return the_model
-    
+    def check_and_add_state(self, a_state, a_state_list):
+        print(a_state)
+        the_found = 0
+        if a_state == '[*]':
+            the_found = 1
+        else :
+            for st in a_state_list:
+                if a_state in st['name']:
+                    the_found = 1
+                    break
+        if the_found == 0:
+            a_state_list.append({'name': a_state})
+        return
+
+    def state_declaration(self, item):
+        print("sde:")
+        print(item)
+        result = {}
+        result['name'] = []
+        result['state'] = []
+        result['transition'] = []
+        for d in item:
+            #print("d:")
+            #print(d)
+            for key, value in d.items():
+                result[key].append(value)
+
+        for tr in result['transition']:
+            self.check_and_add_state(tr['STATE_NAME_FROM'], result['state'])
+            self.check_and_add_state(tr['STATE_NAME_TO'], result['state'])
+            
+        return {'state' : result}
+
+    def STATE_NAME(self, item):
+        return {'name' : item.value}
+
+    def STATE_NAME_FROM(self, item):
+        return {item.type : item.value}
+
+    def STATE_NAME_TO(self, item):
+        return {item.type : item.value}
+
+    def TRANSITION_LABEL(self, item):
+        return {item.type : item.value}
+
+    def transition(self, item):
+        result = {}
+        for d in item:
+            #print("t:")
+            #print(d)
+            result.update(d)
+        #print(result)
+        return {'transition' : result}
+
+    def FSM_NAME(self, item):
+        return {'name' : item.value}
+
+    def state_diagram(self, item):
+        print("sd:")
+        print(item)
+        result = {}
+        result['name'] = []
+        result['state'] = []
+        result['transition'] = []
+        for d in item:
+            #print("d:")
+            #print(d)
+            for key, value in d.items():
+                result[key].append(value)
+        return {'FSM' : result}
 
 def getopts(argv):
     opts = {}  # Empty dictionary to store key-value pairs.
@@ -221,19 +276,12 @@ if __name__ == '__main__':
 
     environment = Environment(loader=FileSystemLoader("src/templates/"))
     template_class_hpp = environment.get_template("template_class_hpp.txt")
+    template_fsm_hpp = environment.get_template("template_FSM_hpp.txt")
+
 
 
     relationship_dicts_list = [d['relationship'] for d in the_model if 'relationship' in d]
-    #print(relationship_dicts_list)
     extension_dicts_list = [d for d in relationship_dicts_list if d['RELATION_ARROW'] == 'extension']
-    #print('aaaa')
-    print(extension_dicts_list)
-    #print('bbbb')
-    #for the_relation_dict in relationship_dicts :
-    #    print(the_relation_dict)
-    #    if (the_relation_dict['RELATION_ARROW'] == 'extension') :
-    #        print(the_relation_dict['RELATION_CLASS_NAME_AFTER'])
-            
 
 
     class_dicts = [d['class'] for d in the_model if 'class' in d]

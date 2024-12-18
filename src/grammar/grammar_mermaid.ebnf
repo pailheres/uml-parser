@@ -52,8 +52,8 @@ state_declaration: "state" STATE_NAME "{" _inner_state_block+ "}" | "state" STAT
 
 _inner_state_block: state_declaration | transition
 
-transition: STATE_NAME_FROM "-->" STATE_NAME_TO transition_option?
-transition_option : ":" TRANSITION_LABEL
+transition: STATE_NAME_FROM "-->" STATE_NAME_TO (":" TRANSITION_LABEL)?
+_transition_option : ":" TRANSITION_LABEL
 
 
 
@@ -84,7 +84,7 @@ FSM_NAME: CNAME
 STATE_NAME: CNAME
 STATE_NAME_FROM: (CNAME | "[*]")
 STATE_NAME_TO: (CNAME | "[*]")
-TRANSITION_LABEL: /.+/
+TRANSITION_LABEL: /[A-Za-z0-9_]+/
 
 
 %import common.CNAME
