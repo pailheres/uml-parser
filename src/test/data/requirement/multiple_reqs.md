@@ -103,29 +103,29 @@ Comme ceci :
 stateDiagram-v2
     state essai {
         [*] --> State1
-        State1 --> State2 : Transition_1
-        State1 --> State3 : Transition_2
-        State2 --> State4 : Transition_3
-        State3 --> State4 : Transition_4
+        State1 --> State2 : 'AA BB CC DD EE FF GG HH II JJ KK LL MM NN OO PP'
+        State1 --> State3 : 'Transition A'
+        State2 --> State4 : 'Transition B mettre du texte pas mal plus long pour voir ce que ca donne comme rendering'
+        State3 --> State4 : 'Transition C'
         State4 --> [*]
 
         state State1 {
             [*] --> SubState1
-            SubState1 --> SubState2 : Sub_Transition
+            SubState1 --> SubState2 : 'Sub Transition'
             SubState2 --> [*]
         }
 
         state State3 {
             [*] --> InnerState1
-            InnerState1 --> InnerState2 : Inner_Transition
-            InnerState2 --> State3A : blabla
-            State3A --> InnerState1 : Loop_Transition
+            InnerState1 --> InnerState2 : 'Inner Transition Z'
+            InnerState2 --> State3A : 'blabla'
+            State3A --> InnerState1 : 'Loop Transition Z'
             State3A --> [*]
 
             state State3A {
             [*] --> InnerState3A1
-            InnerState3A1 --> InnerState3A2 : Inner_Transition
-            InnerState3A2 --> aaaaaaa : Loop_Transition
+            InnerState3A1 --> InnerState3A2 : 'Inner Transition Y'
+            InnerState3A2 --> aaaaaaa : 'Loop Transition Y'
             aaaaaaa --> bbbbbbbbb
             bbbbbbbbb --> [*]
             }

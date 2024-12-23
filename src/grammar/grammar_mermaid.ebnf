@@ -51,9 +51,6 @@ state_declaration: "state" STATE_NAME "{" _inner_state_block+ "}"
 _inner_state_block: state_declaration | transition
 
 transition: STATE_NAME_FROM "-->" STATE_NAME_TO (":" TRANSITION_LABEL)?
-_transition_option : ":" TRANSITION_LABEL
-
-
 
 //RULES
 sparam: CNAME
@@ -78,11 +75,10 @@ RELATION_ARROW: ("<|--" // -> extension, same thing as inheritance
                | "o--"  // -> aggregation
                | "--")  // -> use
 
-FSM_NAME: CNAME
 STATE_NAME: CNAME
 STATE_NAME_FROM: (CNAME | "[*]")
 STATE_NAME_TO: (CNAME | "[*]")
-TRANSITION_LABEL: /[A-Za-z0-9_]+/
+TRANSITION_LABEL: /'([^']*)'/
 
 
 %import common.CNAME

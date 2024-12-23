@@ -157,42 +157,49 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
                     the_found = 1
                     break
         if the_found == 0:
-            a_state_list.append({'name': a_state, 'out_state': []})
+            a_state_list.append({'name': a_state, 'out_states': []})
         return
 
     def add_out_transition_to_state(self, a_from_state, a_to_state, a_state_list):
-        print('qwerty')
-        print(a_from_state)
-        print(a_to_state)
+        #print('qwerty')
+        #print(a_from_state)
+        #print(a_to_state)
         #print(a_state_list)
         match = next((item for item in a_state_list if item.get('name') == a_from_state), None)
         if (match != None) :
-            match['out_state'].append(a_to_state)
+            match['out_states'].append(a_to_state)
         return
 
     def state_declaration(self, item):
         result = {}
         result['name'] = ''
-        result['state'] = []
-        result['transition'] = []
-        result['out_state'] = []
+        result['states'] = []
+        result['transitions'] = []
+        result['out_states'] = []
         for d in item:
             #print("d:")
             #print(d)
             for key, value in d.items():
                 if key == 'name':
                     result[key] = value
-                else:
-                    result[key].append(value)
+                elif key == 'transition':
+                    result['transitions'].append(value)
+                elif key == 'state':
+                    result['states'].append(value)
 
-        for tr in result['transition']:
-            self.check_and_add_state(tr['STATE_NAME_FROM'], result['state'])
-            self.check_and_add_state(tr['STATE_NAME_TO'], result['state'])
+        for tr in result['transitions']:
+            self.check_and_add_state(tr['STATE_NAME_FROM'], result['states'])
+            self.check_and_add_state(tr['STATE_NAME_TO'], result['states'])
 
-        for tr in result['transition']:
-            self.add_out_transition_to_state(tr['STATE_NAME_FROM'], tr['STATE_NAME_TO'], result['state'])
+        for tr in result['transitions']:
+            self.add_out_transition_to_state(tr['STATE_NAME_FROM'], tr['STATE_NAME_TO'], result['states'])
+
+        #pp.pprint('blob11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111:')
+        #pp.pprint(result)
+        #pp.pprint('222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222:')
             
         return {'state' : result}
+        #return result
 
     def STATE_NAME(self, item):
         return {'name' : item.value}
@@ -214,6 +221,33 @@ class ProcessPlantUmlTree(lark.visitors.Transformer):
             result.update(d)
         #print(result)
         return {'transition' : result}
+
+    def state_diagram(self, item):
+        result = {}
+        result['states'] = []
+        for d in item:
+            for key, value in d.items():
+                if key == 'state':
+                    result['states'].append(value)
+        return result
+
+
+def f_write_fsm_file(a_fsm):
+    print('qwerty1')
+    pp.pprint(a_fsm)
+
+    filename = f"out/{a_fsm['name'].lower()}.hpp"
+    content = template_fsm_hpp.render(a_fsm)
+    with open(filename, mode='w', encoding='utf-8') as message:
+        message.write(content)
+        print(f'... wrote {filename}')
+    if ('states' in a_fsm):
+        for the_child_fsm in a_fsm['states']:
+            if ('states' in the_child_fsm):
+                f_write_fsm_file(the_child_fsm)
+
+    return;
+
 
 def getopts(argv):
     opts = {}  # Empty dictionary to store key-value pairs.
@@ -292,11 +326,14 @@ if __name__ == '__main__':
         with open(filename, mode='w', encoding='utf-8') as message:
             message.write(content)
             print(f'... wrote {filename}')
-            
-    fsm_dicts = [d['state'] for d in the_model if 'state' in d]
-    for the_fsm in fsm_dicts:
-        filename = f"out/{the_fsm['name'].lower()}.hpp"
-        content = template_fsm_hpp.render(the_fsm)
-        with open(filename, mode='w', encoding='utf-8') as message:
-            message.write(content)
-            print(f'... wrote {filename}')
+
+    for the_fsm in the_model['states']:
+        f_write_fsm_file(the_fsm)
+
+    #fsm_dicts = [d['state'] for d in the_model if 'state' in d]
+    #for the_fsm in fsm_dicts:
+    #    filename = f"out/{the_fsm['name'].lower()}.hpp"
+    #    content = template_fsm_hpp.render(the_fsm)
+    #    with open(filename, mode='w', encoding='utf-8') as message:
+    #        message.write(content)
+    #        print(f'... wrote {filename}')

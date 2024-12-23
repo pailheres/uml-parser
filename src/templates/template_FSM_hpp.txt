@@ -8,20 +8,20 @@
 class {{ name }} {
 public:
     enum class e_state {
-        e_invalid,{% for the_state in state %}
+        e_invalid,{% for the_state in states %}
         e_{{ the_state['name'] }}{% if not loop.last %},{% endif %}{% endfor %}
     };
 
-    {% for the_state in state %}
+    {% for the_state in states %}
     e_state f_ifsm_{{ the_state['name'] }}();{% endfor %}
 
     void f_fsm(void) {
         e_state the_next_state;
         switch(this->m_fsm.f_getState()) {
-            {% for the_state in state %}
+            {% for the_state in states %}
             case e_{{ the_state['name'] }} : {
                 the_next_state = f_ifsm_{{ the_state['name'] }}();
-                switch (the_next_state) { {% for the_out_state in the_state['out_state'] %}
+                switch (the_next_state) { {% for the_out_state in the_state['out_states'] %}
                   case e_{{ the_out_state }} : {break;}  //nothing to do since already ok{% endfor %}
                   default : {the_next_state = e_invalid; break;}
                 }
